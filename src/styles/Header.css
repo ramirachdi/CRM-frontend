@@ -1,0 +1,16 @@
+.headerToolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f0f0f0; 
+  }
+  
+  .headerLogo {
+    height: 50px;
+  }
+  
+  .headerTitle {
+    flex-grow: 1;
+    text-align: center;
+  }
+  

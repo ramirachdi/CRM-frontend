@@ -1,0 +1,15 @@
+.sidebarContainer {
+    width: 250px;
+    height: 100vh;
+    background-color: #f0f0f0; 
+  }
+  
+  .sidebarList {
+    width: 100%;
+  }
+  
+  .sidebarListItem {
+    display: flex;
+    align-items: center;
+  }
+  

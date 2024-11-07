@@ -1,0 +1,17 @@
+.appContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.appBody {
+  display: flex;
+  flex-grow: 1;
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 20px;
+  overflow-y: auto; /* Allows scrolling */
+  background-color: #eaeaea; 
+}
