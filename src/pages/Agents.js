@@ -21,7 +21,7 @@ function Agents() {
   const [searchQuery, setSearchQuery] = useState('');
 
   return (
-      <div style={{ margin: '20px' }}>
+      <div>
         <TextField
           label="Search Agents"
           variant="outlined"

@@ -5,6 +5,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
+import { Link } from 'react-router-dom';
 import '../styles/Sidebar.css'; 
 
 function Sidebar() {
@@ -12,14 +13,15 @@ function Sidebar() {
     <div className="sidebarContainer">
       <List className="sidebarList">
         {[
-          { text: "Dashboard", icon: <HomeIcon /> },
-          { text: "Agents", icon: <PeopleIcon /> },
-
+          { text: "Dashboard", icon: <HomeIcon />, link: "/" },
+          { text: "Agents", icon: <PeopleIcon />, link: "/agents" },
         ].map((item, index) => (
-          <ListItem button key={item.text} className="sidebarListItem">
-            <ListItemIcon>{item.icon}</ListItemIcon>
-            <ListItemText primary={item.text} />
-          </ListItem>
+          <Link to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.text}>
+            <ListItem button className="sidebarListItem">
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItem>
+          </Link>
         ))}
       </List>
     </div>
