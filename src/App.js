@@ -1,20 +1,28 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
+import Home from './pages/Home'; 
+import Agents from './pages/Agents';
 import './styles/App.css';
 
 function App() {
   return (
-    <div className="appContainer">
-      <Header />
-      <div className="appBody">
-        <Sidebar />
-        <main className="mainContent">
-          {/* Main content goes here */}
-          Welcome to the CRM Dashboard!
-        </main>
+    <BrowserRouter>
+      <div className="appContainer">
+        <Header />
+        <div className="appBody">
+          <Sidebar />
+          <main className="mainContent">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/agents" element={<Agents />} />
+
+            </Routes>
+          </main>
+        </div>
       </div>
-    </div>
+    </BrowserRouter>
   );
 }
 
