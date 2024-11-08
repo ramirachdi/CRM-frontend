@@ -1,11 +1,12 @@
 import React from 'react';
 
-function Home() {
+function Statistics() {
   return (
     <div>
-      Welcome to the Home Page!
+      <h1>Home Page</h1>
+      <p>Coming Soon ...</p>
     </div>
   );
 }
 
-export default Home;
+export default Statistics;

@@ -4,7 +4,7 @@ function Statistics() {
   return (
     <div>
       <h1>Statistics</h1>
-      <p>Welcome to the Statistics Page!</p>
+      <p>Coming Soon ...</p>
     </div>
   );
 }
