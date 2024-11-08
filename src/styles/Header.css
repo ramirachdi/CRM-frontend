@@ -12,4 +12,11 @@
   .headerTitle {
     flex-grow: 1;
     text-align: center;
+    color: #333; 
+    font-family: "Sour Gummy", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-variation-settings:
+      "wdth" 100; 
   }
