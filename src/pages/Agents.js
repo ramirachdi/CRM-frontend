@@ -29,13 +29,15 @@ function Agents() {
           fullWidth
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value.toLowerCase())}
-          InputProps={{
+          slotProps={{
+            input: {
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+              <SearchIcon />
               </InputAdornment>
             )
-          }}
+          }}}
+          
           color="primary"
           style={{ marginBottom: '20px' }}
         />

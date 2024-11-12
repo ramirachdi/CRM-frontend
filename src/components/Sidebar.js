@@ -16,6 +16,7 @@ function Sidebar() {
         {[
           { text: "Dashboard", icon: <HomeIcon />, link: "/" },
           { text: "Agents", icon: <PeopleIcon />, link: "/agents" },
+          { text: "Compagnes", icon: <PeopleIcon />, link: "/compagnes" },
           { text: "Statistics", icon: <BarChartIcon />, link: "/statistics" },
         ].map((item, index) => (
           <Link to={item.link} style={{ textDecoration: 'none', color: 'inherit' }} key={item.text}>
