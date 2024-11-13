@@ -1,4 +1,3 @@
-// src/pages/Compagnes.js
 import React, { useState, useEffect } from 'react';
 import CompagneTable from '../components/CompagneTable';
 import TextField from '@mui/material/TextField';

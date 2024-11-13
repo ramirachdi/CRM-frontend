@@ -16,7 +16,6 @@ function AgentTable({ agents, setAgents }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  // State for managing the edit and create dialogs
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -43,7 +42,7 @@ function AgentTable({ agents, setAgents }) {
   };
 
   const handleOpenCreateDialog = () => {
-    setSelectedAgent({ name: '', email: '', phone: '' }); // Empty agent for new creation
+    setSelectedAgent({ name: '', email: '', phone: '' });
     setIsEditMode(false);
     setOpenDialog(true);
   };
@@ -55,13 +54,11 @@ function AgentTable({ agents, setAgents }) {
   const handleSave = async (agent) => {
     try {
       if (isEditMode) {
-        // Edit Mode
         const updatedAgent = await editAgent(agent.id, agent);
         setAgents((prevAgents) =>
           prevAgents.map((a) => (a.id === agent.id ? updatedAgent : a))
         );
       } else {
-        // Create Mode
         const newAgent = await createAgent(agent);
         setAgents((prevAgents) => [...prevAgents, newAgent]);
       }
@@ -108,6 +105,7 @@ function AgentTable({ agents, setAgents }) {
               </TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
+              <TableCell>Compagnes</TableCell> {/* New column for compagnes */}
               <TableCell>Statistics</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -122,10 +120,19 @@ function AgentTable({ agents, setAgents }) {
                 </TableCell>
                 <TableCell>{agent.phone}</TableCell>
                 <TableCell>
+                  {/* Display associated compagnes here */}
+                  {agent.compagnes && agent.compagnes.length > 0 ? (
+                    agent.compagnes.map((compagne) => compagne.name).join(', ')
+                  ) : (
+                    ''
+                  )}
+                </TableCell>
+                <TableCell>
                   <Button
                     variant="outlined"
                     color="primary"
                     onClick={() => alert(`Statistics for ${agent.name} are coming soon!`)}
+                    style={{ backgroundColor: '#59b5f7' , color: 'white' }}
                   >
                     View Stats
                   </Button>

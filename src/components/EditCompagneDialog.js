@@ -1,14 +1,32 @@
 // src/components/EditCompagneDialog.js
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button
 } from '@mui/material';
+import Autocomplete from '@mui/material/Autocomplete';
+import { fetchAgents } from '../services/agentService'; // This assumes you have a service to fetch agents
 
 function EditCompagneDialog({ open, onClose, compagneData, onSave }) {
-  const [compagne, setCompagne] = React.useState(compagneData);
+  const [compagne, setCompagne] = useState(compagneData);
+  const [agents, setAgents] = useState([]); // List of all agents from the backend
+  const [selectedAgents, setSelectedAgents] = useState([]); // Selected agents for the compagne
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // Set the compagne data when opening the dialog
     setCompagne(compagneData);
+    setSelectedAgents(compagneData?.agents || []); // Initialize with existing agents
+
+    // Fetch all available agents from the backend
+    const loadAgents = async () => {
+      try {
+        const data = await fetchAgents(); // Fetch all agents from the backend
+        setAgents(data);
+      } catch (error) {
+        console.error('Failed to load agents:', error);
+      }
+    };
+
+    loadAgents();
   }, [compagneData]);
 
   const handleChange = (e) => {
@@ -16,8 +34,12 @@ function EditCompagneDialog({ open, onClose, compagneData, onSave }) {
     setCompagne((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleAgentChange = (event, newValue) => {
+    setSelectedAgents(newValue); // Update selected agents
+  };
+
   const handleSave = () => {
-    onSave(compagne);
+    onSave({ ...compagne, agentsIds: selectedAgents.map(a => a.id) }); // Pass only IDs to onSave
   };
 
   return (
@@ -55,6 +77,21 @@ function EditCompagneDialog({ open, onClose, compagneData, onSave }) {
           fullWidth
           value={compagne?.typeDeService || ''}
           onChange={handleChange}
+        />
+
+        {/* Agents Multi-Select with Disabled Selected Options */}
+        <Autocomplete
+          multiple
+          options={agents}
+          getOptionLabel={(option) => option.name}
+          value={selectedAgents}
+          onChange={handleAgentChange}
+          getOptionDisabled={(option) =>
+            selectedAgents.some((selectedAgent) => selectedAgent.id === option.id)
+          } // Disable already selected options
+          renderInput={(params) => (
+            <TextField {...params} variant="outlined" margin="dense" label="Select Agents" placeholder="Agents" />
+          )}
         />
       </DialogContent>
       <DialogActions>

@@ -10,6 +10,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import AddIcon from '@mui/icons-material/Add';
 import { deleteCompagne, editCompagne, createCompagne } from '../services/compagneService';
 import EditCompagneDialog from './EditCompagneDialog';
+import ViewAgentsDialog from './ViewAgentsDialog'; // Import the new dialog
 
 function CompagneTable({ compagnes, setCompagnes }) {
   const [orderDirection, setOrderDirection] = useState('asc');
@@ -20,6 +21,8 @@ function CompagneTable({ compagnes, setCompagnes }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCompagne, setSelectedCompagne] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [openAgentsDialog, setOpenAgentsDialog] = useState(false); // State for agents dialog
+  const [agentsForDialog, setAgentsForDialog] = useState([]); // Agents for the dialog
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && orderDirection === 'asc';
@@ -69,6 +72,11 @@ function CompagneTable({ compagnes, setCompagnes }) {
     }
   };
 
+  const handleViewAgents = (agents) => {
+    setAgentsForDialog(agents);
+    setOpenAgentsDialog(true);
+  };
+
   const sortedCompagnes = [...compagnes]
     .sort((a, b) => {
       const valueA = a[orderBy] ? a[orderBy].toString().toLowerCase() : '';
@@ -84,7 +92,7 @@ function CompagneTable({ compagnes, setCompagnes }) {
         color="primary"
         startIcon={<AddIcon />}
         onClick={handleOpenCreateDialog}
-        style={{ marginBottom: '20px' }}
+        style={{ marginBottom: '20px', backgroundColor: '#2e6f40' }}
       >
         Add New Compagne
       </Button>
@@ -92,7 +100,7 @@ function CompagneTable({ compagnes, setCompagnes }) {
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: '#90d5ff' }}>
+            <TableRow style={{ backgroundColor: '#68ba7f' }}>
               <TableCell>
                 <TableSortLabel
                   active={orderBy === 'name'}
@@ -105,7 +113,8 @@ function CompagneTable({ compagnes, setCompagnes }) {
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Type de Service</TableCell>
-                <TableCell>Statistics</TableCell>
+              <TableCell>Agents</TableCell>
+              <TableCell>Statistics</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -123,7 +132,18 @@ function CompagneTable({ compagnes, setCompagnes }) {
                   <Button
                     variant="outlined"
                     color="primary"
+                    onClick={() => handleViewAgents(compagne.agents)}
+                    style={{ backgroundColor: '#84b067' , color: 'white' }}
+                  >
+                    View Agents
+                  </Button>
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    color="primary"
                     onClick={() => alert(`Statistics for ${compagne.name} are coming soon!`)}
+                    style={{ backgroundColor: '#59b5f7' , color: 'white' }}
                   >
                     View Stats
                   </Button>
@@ -160,6 +180,13 @@ function CompagneTable({ compagnes, setCompagnes }) {
         onClose={handleCloseDialog}
         compagneData={selectedCompagne}
         onSave={handleSave}
+      />
+
+      {/* Agents Dialog */}
+      <ViewAgentsDialog
+        open={openAgentsDialog}
+        onClose={() => setOpenAgentsDialog(false)}
+        agents={agentsForDialog}
       />
     </>
   );
