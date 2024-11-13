@@ -1,4 +1,3 @@
-// src/components/CompagneTable.js
 import React, { useState } from 'react';
 import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,

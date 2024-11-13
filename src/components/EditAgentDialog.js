@@ -3,12 +3,12 @@ import {
   Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button
 } from '@mui/material';
 import Autocomplete from '@mui/material/Autocomplete';
-import { fetchCompagnes } from '../services/compagneService'; // Assumes a service to fetch compagnes
+import { fetchCompagnes } from '../services/compagneService'; 
 
 function EditAgentDialog({ open, onClose, agentData, onSave }) {
   const [agent, setAgent] = useState(agentData);
-  const [compagnes, setCompagnes] = useState([]); // List of all compagnes from the backend
-  const [selectedCompagnes, setSelectedCompagnes] = useState([]); // Selected compagnes for the agent
+  const [compagnes, setCompagnes] = useState([]); 
+  const [selectedCompagnes, setSelectedCompagnes] = useState([]); 
 
   useEffect(() => {
     // Set the agent data when opening the dialog
@@ -70,7 +70,6 @@ function EditAgentDialog({ open, onClose, agentData, onSave }) {
           onChange={handleChange}
         />
 
-        {/* Compagnes Multi-Select with Disabled Selected Options */}
         <Autocomplete
           multiple
           options={compagnes}

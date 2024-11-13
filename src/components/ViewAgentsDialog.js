@@ -1,4 +1,3 @@
-// src/components/ViewAgentsDialog.js
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, List, ListItem, ListItemText, Button } from '@mui/material';
 
