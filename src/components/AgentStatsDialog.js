@@ -29,8 +29,8 @@ function AgentStatsDialog({ open, onClose, agent }) {
     }
 
     try {
-      const formattedDateDebut = new Date(dateDebut).toISOString();
-      const formattedDateFin = new Date(dateFin).toISOString();
+      const formattedDateDebut = `${dateDebut}T00:00:00.000Z`;
+      const formattedDateFin = `${dateFin}T23:59:59.999Z`;
       const data = await fetchStatisticsBetweenDates(agent.id, compagneId, formattedDateDebut, formattedDateFin);
       setStatistics(data);
     } catch (error) {
@@ -44,19 +44,27 @@ function AgentStatsDialog({ open, onClose, agent }) {
       <DialogContent>
         <TextField
           label="Date Debut"
-          type="datetime-local"
+          type="date"
           fullWidth
           margin="dense"
           value={dateDebut}
           onChange={(e) => setDateDebut(e.target.value)}
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
         <TextField
           label="Date Fin"
-          type="datetime-local"
+          type="date"
           fullWidth
           margin="dense"
           value={dateFin}
           onChange={(e) => setDateFin(e.target.value)}
+          variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
         <TextField
           label="Compagne"
@@ -65,6 +73,7 @@ function AgentStatsDialog({ open, onClose, agent }) {
           margin="dense"
           value={compagneId}
           onChange={(e) => setCompagneId(e.target.value)}
+          variant="outlined"
         >
           {agent?.compagnes.map((compagne) => (
             <MenuItem key={compagne.id} value={compagne.id}>
@@ -76,11 +85,11 @@ function AgentStatsDialog({ open, onClose, agent }) {
           <div style={{ marginTop: '20px' }}>
             <h4>Statistics:</h4>
             <p>Nombre Appels Entrants: {statistics.nombreAppelsEntrants}</p>
-            <p>DTCE: {statistics.dtce}</p>
-            <p>DMCE: {statistics.dmce}</p>
+            <p>DTAE: {statistics.dtce}</p>
+            <p>DMAE: {statistics.dmce}</p>
             <p>Nombre Appels Sortants: {statistics.nombreAppelsSortants}</p>
-            <p>DTCS: {statistics.dtcs}</p>
-            <p>DMCS: {statistics.dmcs}</p>
+            <p>DTAS: {statistics.dtcs}</p>
+            <p>DMAS: {statistics.dmcs}</p>
             <p>Total Days: {statistics.totalDays}</p>
           </div>
         )}
