@@ -9,6 +9,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import AddIcon from '@mui/icons-material/Add';
 import { deleteAgent, editAgent, createAgent } from '../services/agentService';
 import EditAgentDialog from './EditAgentDialog';
+import AgentStatsDialog from './AgentStatsDialog';
 
 function AgentTable({ agents, setAgents }) {
   const [orderDirection, setOrderDirection] = useState('asc');
@@ -19,6 +20,9 @@ function AgentTable({ agents, setAgents }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
+
+  const [openStatsDialog, setOpenStatsDialog] = useState(false);
+  const [selectedAgentForStats, setSelectedAgentForStats] = useState(null);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && orderDirection === 'asc';
@@ -68,6 +72,16 @@ function AgentTable({ agents, setAgents }) {
     }
   };
 
+  const handleViewStats = (agent) => {
+    setSelectedAgentForStats(agent);
+    setOpenStatsDialog(true);
+  };
+
+  const handleCloseStatsDialog = () => {
+    setOpenStatsDialog(false);
+    setSelectedAgentForStats(null);
+  };
+
   const sortedAgents = [...agents]
     .sort((a, b) => {
       const valueA = a[orderBy] ? a[orderBy].toString().toLowerCase() : '';
@@ -105,7 +119,7 @@ function AgentTable({ agents, setAgents }) {
               </TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
-              <TableCell>Compagnes</TableCell> {/* New column for compagnes */}
+              <TableCell>Compagnes</TableCell>
               <TableCell>Statistics</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -120,19 +134,16 @@ function AgentTable({ agents, setAgents }) {
                 </TableCell>
                 <TableCell>{agent.phone}</TableCell>
                 <TableCell>
-                  {/* Display associated compagnes here */}
-                  {agent.compagnes && agent.compagnes.length > 0 ? (
-                    agent.compagnes.map((compagne) => compagne.name).join(', ')
-                  ) : (
-                    ''
-                  )}
+                  {agent.compagnes && agent.compagnes.length > 0
+                    ? agent.compagnes.map((compagne) => compagne.name).join(', ')
+                    : ''}
                 </TableCell>
                 <TableCell>
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => alert(`Statistics for ${agent.name} are coming soon!`)}
-                    style={{ backgroundColor: '#59b5f7' , color: 'white' }}
+                    onClick={() => handleViewStats(agent)}
+                    style={{ backgroundColor: '#59b5f7', color: 'white' }}
                   >
                     View Stats
                   </Button>
@@ -169,6 +180,12 @@ function AgentTable({ agents, setAgents }) {
         onClose={handleCloseDialog}
         agentData={selectedAgent}
         onSave={handleSave}
+      />
+
+      <AgentStatsDialog
+        open={openStatsDialog}
+        onClose={handleCloseStatsDialog}
+        agent={selectedAgentForStats}
       />
     </>
   );
