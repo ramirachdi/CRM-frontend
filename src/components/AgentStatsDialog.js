@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -21,32 +21,64 @@ function AgentStatsDialog({ open, onClose, agent }) {
   const [dateFin, setDateFin] = useState('');
   const [compagneId, setCompagneId] = useState('');
   const [statistics, setStatistics] = useState(null);
+  const [initialFetchDone, setInitialFetchDone] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    setInitialFetchDone(false);
+    setStatistics(null);
     if (agent && agent.compagnes.length > 0) {
-      setCompagneId(agent.compagnes[0].id); // Default to the first compagne
+      setCompagneId(agent.compagnes[0].id);
+    } else {
+      setCompagneId('');
     }
   }, [agent]);
 
-  const handleFetchStatistics = async () => {
+  const fetchStatistics = useCallback(async () => {
     if (!dateDebut || !dateFin || !compagneId) {
-      alert('Please select all fields.');
+      setError('All fields must be filled out.');
       return;
     }
 
-    try {
-      const formattedDateDebut = `${dateDebut}T00:00:00.000Z`;
-      const formattedDateFin = `${dateFin}T23:59:59.999Z`;
-      const data = await fetchStatisticsBetweenDates(agent.id, compagneId, formattedDateDebut, formattedDateFin);
-      setStatistics(data);
-    } catch (error) {
-      console.error('Error fetching statistics:', error);
+    setError(''); // Clear any existing error
+    if (agent && agent.id) {
+      try {
+        const formattedDateDebut = `${dateDebut}T00:00:00.000Z`;
+        const formattedDateFin = `${dateFin}T23:59:59.999Z`;
+        const data = await fetchStatisticsBetweenDates(agent.id, compagneId, formattedDateDebut, formattedDateFin);
+        setStatistics(data);
+      } catch (error) {
+        console.error('Error fetching statistics:', error);
+        setStatistics(null);
+      }
     }
+  }, [dateDebut, dateFin, compagneId, agent]);
+
+  useEffect(() => {
+    if (initialFetchDone) {
+      fetchStatistics();
+    }
+  }, [dateDebut, dateFin, compagneId, fetchStatistics, initialFetchDone]);
+
+  const handleInitialFetch = () => {
+    fetchStatistics();
+    setInitialFetchDone(true); // Mark the initial fetch as done
+  };
+
+  const handleDialogClose = () => {
+    onClose();
+    setStatistics(null);
+    setInitialFetchDone(false); // Reset initial fetch status
+    setError(''); // Clear error on close
+  };
+
+  const handleChange = setter => value => {
+    setter(value);
   };
 
   const getFormattedKey = (key) => {
     const replacements = {
-      nombreAppelsEntrants: 'Nombre d\'appels entrants', 
+      nombreAppelsEntrants: 'Nombre d\'appels entrants',
       dtce: 'Durée totale d\'appels entrants (sec)',
       dmce: 'Durée moyenne d\'appels entrants (sec)',
       nombreAppelsSortants: 'Nombre d\'appels sortants',
@@ -54,40 +86,23 @@ function AgentStatsDialog({ open, onClose, agent }) {
       dmcs: 'Durée moyenne d\'appels sortants (sec)',
       totalDays: 'Nombre de Jours'
     };
-    return replacements[key] || key; // Return the replacement if it exists, otherwise return the key as is
+    return replacements[key] || key;
   };
 
-  const orderOfKeys = [
-    'nombreAppelsEntrants',
-    'dtce',
-    'dmce',
-    'nombreAppelsSortants',
-    'dtcs',
-    'dmcs',
-    'totalDays' // Ensuring 'totalDays' appears last
-  ];
-
-  const sortedStatistics = statistics ? orderOfKeys
-    .filter(key => key in statistics)  // Filter out keys that are not in the statistics
-    .map(key => ({ key, value: statistics[key] })) : [];
-
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
-      <DialogTitle>Statistics for {agent?.name}</DialogTitle>
+    <Dialog open={open} onClose={handleDialogClose} fullWidth maxWidth="md">
+      <DialogTitle>Statistics for {agent?.name || 'Unavailable'}</DialogTitle>
       <DialogContent>
+        {error && <p style={{ color: 'red', marginBottom: '10px' }}>{error}</p>}
         <TextField
           label="Date Debut"
           type="date"
           fullWidth
           margin="dense"
           value={dateDebut}
-          onChange={(e) => setDateDebut(e.target.value)}
+          onChange={(e) => handleChange(setDateDebut)(e.target.value)}
           variant="outlined"
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
+          InputLabelProps={{ shrink: true }}
         />
         <TextField
           label="Date Fin"
@@ -95,13 +110,9 @@ function AgentStatsDialog({ open, onClose, agent }) {
           fullWidth
           margin="dense"
           value={dateFin}
-          onChange={(e) => setDateFin(e.target.value)}
+          onChange={(e) => handleChange(setDateFin)(e.target.value)}
           variant="outlined"
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
+          InputLabelProps={{ shrink: true }}
         />
         <TextField
           label="Compagne"
@@ -109,10 +120,10 @@ function AgentStatsDialog({ open, onClose, agent }) {
           fullWidth
           margin="dense"
           value={compagneId}
-          onChange={(e) => setCompagneId(e.target.value)}
+          onChange={(e) => handleChange(setCompagneId)(e.target.value)}
           variant="outlined"
         >
-          {agent?.compagnes.map((compagne) => (
+          {agent?.compagnes?.map((compagne) => (
             <MenuItem key={compagne.id} value={compagne.id}>
               {compagne.name}
             </MenuItem>
@@ -122,8 +133,8 @@ function AgentStatsDialog({ open, onClose, agent }) {
           <TableContainer component={Paper} style={{ marginTop: '20px' }}>
             <Table size="small" aria-label="Agent statistics">
               <TableBody>
-                {sortedStatistics.map(({ key, value }, index) => (
-                  <TableRow key={key} style={{ backgroundColor: index % 2 === 0 ? '#adcced' : '#ede8d0' }}>
+                {Object.entries(statistics).filter(([key, _]) => !key.endsWith('Id')).map(([key, value], index) => (
+                  <TableRow key={key} style={{ backgroundColor: index % 2 === 0 ? '#bdddfc' : '#fff1e7' }}>
                     <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
                       {getFormattedKey(key)}
                     </TableCell>
@@ -138,10 +149,10 @@ function AgentStatsDialog({ open, onClose, agent }) {
         )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button onClick={handleDialogClose} color="secondary">
           Close
         </Button>
-        <Button onClick={handleFetchStatistics} color="primary">
+        <Button onClick={handleInitialFetch} color="primary" disabled={initialFetchDone}>
           Fetch Statistics
         </Button>
       </DialogActions>
