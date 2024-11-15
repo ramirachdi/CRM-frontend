@@ -7,6 +7,12 @@ import {
   TextField,
   Button,
   MenuItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TableContainer,
+  Paper
 } from '@mui/material';
 import { fetchStatisticsBetweenDates } from '../services/statisticsService';
 
@@ -38,8 +44,35 @@ function AgentStatsDialog({ open, onClose, agent }) {
     }
   };
 
+  const getFormattedKey = (key) => {
+    const replacements = {
+      nombreAppelsEntrants: 'Nombre d\'appels entrants', 
+      dtce: 'Durée totale d\'appels entrants (sec)',
+      dmce: 'Durée moyenne d\'appels entrants (sec)',
+      nombreAppelsSortants: 'Nombre d\'appels sortants',
+      dtcs: 'Durée totale d\'appels sortants (sec)',
+      dmcs: 'Durée moyenne d\'appels sortants (sec)',
+      totalDays: 'Nombre de Jours'
+    };
+    return replacements[key] || key; // Return the replacement if it exists, otherwise return the key as is
+  };
+
+  const orderOfKeys = [
+    'nombreAppelsEntrants',
+    'dtce',
+    'dmce',
+    'nombreAppelsSortants',
+    'dtcs',
+    'dmcs',
+    'totalDays' // Ensuring 'totalDays' appears last
+  ];
+
+  const sortedStatistics = statistics ? orderOfKeys
+    .filter(key => key in statistics)  // Filter out keys that are not in the statistics
+    .map(key => ({ key, value: statistics[key] })) : [];
+
   return (
-    <Dialog open={open} onClose={onClose} fullWidth>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle>Statistics for {agent?.name}</DialogTitle>
       <DialogContent>
         <TextField
@@ -50,8 +83,10 @@ function AgentStatsDialog({ open, onClose, agent }) {
           value={dateDebut}
           onChange={(e) => setDateDebut(e.target.value)}
           variant="outlined"
-          InputLabelProps={{
-            shrink: true,
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
           }}
         />
         <TextField
@@ -62,8 +97,10 @@ function AgentStatsDialog({ open, onClose, agent }) {
           value={dateFin}
           onChange={(e) => setDateFin(e.target.value)}
           variant="outlined"
-          InputLabelProps={{
-            shrink: true,
+          slotProps={{
+            inputLabel: {
+              shrink: true,
+            },
           }}
         />
         <TextField
@@ -82,16 +119,22 @@ function AgentStatsDialog({ open, onClose, agent }) {
           ))}
         </TextField>
         {statistics && (
-          <div style={{ marginTop: '20px' }}>
-            <h4>Statistics:</h4>
-            <p>Nombre Appels Entrants: {statistics.nombreAppelsEntrants}</p>
-            <p>DTAE: {statistics.dtce}</p>
-            <p>DMAE: {statistics.dmce}</p>
-            <p>Nombre Appels Sortants: {statistics.nombreAppelsSortants}</p>
-            <p>DTAS: {statistics.dtcs}</p>
-            <p>DMAS: {statistics.dmcs}</p>
-            <p>Total Days: {statistics.totalDays}</p>
-          </div>
+          <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+            <Table size="small" aria-label="Agent statistics">
+              <TableBody>
+                {sortedStatistics.map(({ key, value }, index) => (
+                  <TableRow key={key} style={{ backgroundColor: index % 2 === 0 ? '#adcced' : '#ede8d0' }}>
+                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
+                      {getFormattedKey(key)}
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'right', paddingRight: '24px' }}>
+                      {value}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </DialogContent>
       <DialogActions>
