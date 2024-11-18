@@ -4,14 +4,14 @@ import { Table, TableBody, TableCell, TableRow, TableContainer, TableHead, Paper
 function CompagneStatisticsTable({ compagneStatistics }) {
   // Calculate the denominator (sum of the weights for all compagnes)
   const totalOccupationWeight = compagneStatistics.reduce((sum, stat) => {
-    return sum + (stat.nombreAppelsEntrants * stat.dtce + stat.nombreAppelsSortants * stat.dtcs);
+    return sum + (stat.dtce + stat.dtcs);
   }, 0);
 
   // Add taux d'occupation to each compagne and sort the statistics by taux d'occupation in descending order
   const sortedStatistics = [...compagneStatistics]
     .map((stat) => {
       const currentOccupationWeight =
-        stat.nombreAppelsEntrants * stat.dtce + stat.nombreAppelsSortants * stat.dtcs;
+        stat.dtce + stat.dtcs;
       const tauxOccupation =
         totalOccupationWeight > 0 ? (currentOccupationWeight / totalOccupationWeight) * 100 : 0;
 
