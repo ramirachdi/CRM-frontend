@@ -6,6 +6,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone';
 import AddIcon from '@mui/icons-material/Add';
 import { deleteAgent, editAgent, createAgent } from '../services/agentService';
 import EditAgentDialog from './EditAgentDialog';
@@ -132,7 +133,10 @@ function AgentTable({ agents, setAgents }) {
                   <EmailIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5 }} />
                   {agent.email}
                 </TableCell>
-                <TableCell>{agent.phone}</TableCell>
+                <TableCell>
+                  <PhoneIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5 , color:'#2e6f40'}} />
+                  {agent.phone}
+                </TableCell>
                 <TableCell>
                   {agent.compagnes && agent.compagnes.length > 0
                     ? agent.compagnes.map((compagne) => compagne.name).join(', ')
@@ -150,12 +154,14 @@ function AgentTable({ agents, setAgents }) {
                 </TableCell>
                 <TableCell>
                   <Tooltip title="Edit">
-                    <IconButton onClick={() => handleOpenEditDialog(agent)}>
+                    <IconButton onClick={() => handleOpenEditDialog(agent)}
+                      style={{color: '#453306' }}>
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton onClick={() => handleDelete(agent.id)}>
+                    <IconButton onClick={() => handleDelete(agent.id)}
+                      style={{color: '#cd1c18' }}>
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>

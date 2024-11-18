@@ -6,6 +6,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
+import PhoneIcon from '@mui/icons-material/Phone'; 
 import AddIcon from '@mui/icons-material/Add';
 import { deleteCompagne, editCompagne, createCompagne } from '../services/compagneService';
 import EditCompagneDialog from './EditCompagneDialog';
@@ -137,7 +138,10 @@ function CompagneTable({ compagnes, setCompagnes }) {
                   <EmailIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5 }} />
                   {compagne.email}
                 </TableCell>
-                <TableCell>{compagne.phone}</TableCell>
+                <TableCell>
+                  <PhoneIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5, color:'#2e6f40' }} />
+                  {compagne.phone}
+                </TableCell>
                 <TableCell>{compagne.typeDeService}</TableCell>
                 <TableCell>
                   <Button
@@ -161,13 +165,15 @@ function CompagneTable({ compagnes, setCompagnes }) {
                 </TableCell>
                 <TableCell>
                   <Tooltip title="Edit">
-                    <IconButton onClick={() => handleOpenEditDialog(compagne)}>
+                    <IconButton onClick={() => handleOpenEditDialog(compagne)}
+                      style={{color: '#453306' }}>
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton onClick={() => handleDelete(compagne.id)}>
-                      <DeleteIcon />
+                    <IconButton onClick={() => handleDelete(compagne.id)}
+                      style={{color: '#cd1c18' }}>
+                      <DeleteIcon  />
                     </IconButton>
                   </Tooltip>
                 </TableCell>
