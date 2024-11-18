@@ -9,7 +9,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import AddIcon from '@mui/icons-material/Add';
 import { deleteCompagne, editCompagne, createCompagne } from '../services/compagneService';
 import EditCompagneDialog from './EditCompagneDialog';
-import ViewAgentsDialog from './ViewAgentsDialog'; 
+import ViewAgentsDialog from './ViewAgentsDialog';
+import CompagneStatsDialog from './CompagneStatsDialog'; 
 
 function CompagneTable({ compagnes, setCompagnes }) {
   const [orderDirection, setOrderDirection] = useState('asc');
@@ -20,8 +21,9 @@ function CompagneTable({ compagnes, setCompagnes }) {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCompagne, setSelectedCompagne] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
-  const [openAgentsDialog, setOpenAgentsDialog] = useState(false); // State for agents dialog
-  const [agentsForDialog, setAgentsForDialog] = useState([]); // Agents for the dialog
+  const [openStatsDialog, setOpenStatsDialog] = useState(false);
+  const [openAgentsDialog, setOpenAgentsDialog] = useState(false);
+  const [agentsForDialog, setAgentsForDialog] = useState([]);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && orderDirection === 'asc';
@@ -69,6 +71,16 @@ function CompagneTable({ compagnes, setCompagnes }) {
     } catch (error) {
       console.error('Failed to save compagne:', error);
     }
+  };
+
+  const handleViewStats = (compagne) => {
+    setSelectedCompagne(compagne);
+    setOpenStatsDialog(true);
+  };
+
+  const handleCloseStatsDialog = () => {
+    setOpenStatsDialog(false);
+    setSelectedCompagne(null);
   };
 
   const handleViewAgents = (agents) => {
@@ -132,7 +144,7 @@ function CompagneTable({ compagnes, setCompagnes }) {
                     variant="outlined"
                     color="primary"
                     onClick={() => handleViewAgents(compagne.agents)}
-                    style={{ backgroundColor: '#84b067' , color: 'white' }}
+                    style={{ backgroundColor: '#84b067', color: 'white' }}
                   >
                     View Agents
                   </Button>
@@ -141,8 +153,8 @@ function CompagneTable({ compagnes, setCompagnes }) {
                   <Button
                     variant="outlined"
                     color="primary"
-                    onClick={() => alert(`Statistics for ${compagne.name} are coming soon!`)}
-                    style={{ backgroundColor: '#59b5f7' , color: 'white' }}
+                    onClick={() => handleViewStats(compagne)}
+                    style={{ backgroundColor: '#59b5f7', color: 'white' }}
                   >
                     View Stats
                   </Button>
@@ -181,11 +193,16 @@ function CompagneTable({ compagnes, setCompagnes }) {
         onSave={handleSave}
       />
 
-      {/* Agents Dialog */}
       <ViewAgentsDialog
         open={openAgentsDialog}
         onClose={() => setOpenAgentsDialog(false)}
         agents={agentsForDialog}
+      />
+
+      <CompagneStatsDialog
+        open={openStatsDialog}
+        onClose={handleCloseStatsDialog}
+        compagne={selectedCompagne}
       />
     </>
   );
