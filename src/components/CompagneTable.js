@@ -9,7 +9,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import AddIcon from '@mui/icons-material/Add';
 import { deleteCompagne, editCompagne, createCompagne } from '../services/compagneService';
 import EditCompagneDialog from './EditCompagneDialog';
-import ViewAgentsDialog from './ViewAgentsDialog'; // Import the new dialog
+import ViewAgentsDialog from './ViewAgentsDialog'; 
 
 function CompagneTable({ compagnes, setCompagnes }) {
   const [orderDirection, setOrderDirection] = useState('asc');
@@ -111,7 +111,7 @@ function CompagneTable({ compagnes, setCompagnes }) {
               </TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
-              <TableCell>Type de Service</TableCell>
+              <TableCell>Type of Service</TableCell>
               <TableCell>Agents</TableCell>
               <TableCell>Statistics</TableCell>
               <TableCell>Actions</TableCell>
