@@ -18,6 +18,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import AddIcon from '@mui/icons-material/Add';
+import ConfirmationDialog from './ConfirmationDialog';
 import { deleteAgent, editAgent, createAgent } from '../services/agentService';
 import EditAgentDialog from './EditAgentDialog';
 import AgentStatsDialog from './AgentStatsDialog';
@@ -28,12 +29,15 @@ function AgentTable({ agents, setAgents }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openEditDialog, setOpenEditDialog] = useState(false);
   const [selectedAgent, setSelectedAgent] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
 
   const [openStatsDialog, setOpenStatsDialog] = useState(false);
   const [selectedAgentForStats, setSelectedAgentForStats] = useState(null);
+
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [selectedAgentIdForDelete, setSelectedAgentIdForDelete] = useState(null);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && orderDirection === 'asc';
@@ -41,29 +45,34 @@ function AgentTable({ agents, setAgents }) {
     setOrderBy(property);
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async () => {
     try {
-      await deleteAgent(id);
-      setAgents((prev) => prev.filter((agent) => agent.id !== id));
+      await deleteAgent(selectedAgentIdForDelete);
+      setAgents((prevAgents) =>
+        prevAgents.filter((agent) => agent.id !== selectedAgentIdForDelete)
+      );
     } catch (error) {
-      console.error(`Failed to delete agent with id ${id}:`, error);
+      console.error(`Error deleting agent with id ${selectedAgentIdForDelete}:`, error);
+    } finally {
+      setOpenDeleteDialog(false);
+      setSelectedAgentIdForDelete(null);
     }
   };
 
   const handleOpenEditDialog = (agent) => {
     setSelectedAgent(agent);
     setIsEditMode(true);
-    setOpenDialog(true);
+    setOpenEditDialog(true);
   };
 
   const handleOpenCreateDialog = () => {
     setSelectedAgent({ name: '', email: '', phone: '' });
     setIsEditMode(false);
-    setOpenDialog(true);
+    setOpenEditDialog(true);
   };
 
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleCloseEditDialog = () => {
+    setOpenEditDialog(false);
     setSelectedAgent(null); // Clear selected agent on close
   };
 
@@ -78,7 +87,7 @@ function AgentTable({ agents, setAgents }) {
         const newAgent = await createAgent(agent);
         setAgents((prevAgents) => [...prevAgents, newAgent]);
       }
-      handleCloseDialog();
+      handleCloseEditDialog();
     } catch (error) {
       console.error('Failed to save agent:', error);
     }
@@ -145,7 +154,10 @@ function AgentTable({ agents, setAgents }) {
                   {agent.email}
                 </TableCell>
                 <TableCell>
-                  <PhoneIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5, color:'#2e6f40' }} />
+                  <PhoneIcon
+                    fontSize="small"
+                    style={{ verticalAlign: 'middle', marginRight: 5, color: '#2e6f40' }}
+                  />
                   {agent.phone}
                 </TableCell>
                 <TableCell>
@@ -174,7 +186,10 @@ function AgentTable({ agents, setAgents }) {
                   </Tooltip>
                   <Tooltip title="Delete">
                     <IconButton
-                      onClick={() => handleDelete(agent.id)}
+                      onClick={() => {
+                        setSelectedAgentIdForDelete(agent.id);
+                        setOpenDeleteDialog(true);
+                      }}
                       style={{ color: '#cd1c18' }}
                     >
                       <DeleteIcon />
@@ -196,9 +211,17 @@ function AgentTable({ agents, setAgents }) {
         />
       </TableContainer>
 
+      <ConfirmationDialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+        onConfirm={handleDelete}
+        title="Delete Agent"
+        message="Are you sure you want to delete this agent ? This action cannot be undone."
+      />
+
       <EditAgentDialog
-        open={openDialog}
-        onClose={handleCloseDialog}
+        open={openEditDialog}
+        onClose={handleCloseEditDialog}
         agentData={selectedAgent}
         onSave={handleSave}
       />
