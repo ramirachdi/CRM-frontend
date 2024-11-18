@@ -27,10 +27,10 @@ function AgentStatsDialog({ open, onClose, agent }) {
   useEffect(() => {
     setInitialFetchDone(false);
     setStatistics(null);
-    if (agent && agent.compagnes.length > 0) {
-      setCompagneId(agent.compagnes[0].id);
+    if (agent?.compagnes?.length > 0) {
+      setCompagneId(agent.compagnes[0].id); // Default to the first compagne
     } else {
-      setCompagneId('');
+      setCompagneId(''); // Clear if no compagnes
     }
   }, [agent]);
 
@@ -72,19 +72,19 @@ function AgentStatsDialog({ open, onClose, agent }) {
     setError(''); // Clear error on close
   };
 
-  const handleChange = setter => value => {
+  const handleChange = (setter) => (value) => {
     setter(value);
   };
 
   const getFormattedKey = (key) => {
     const replacements = {
-      nombreAppelsEntrants: 'Nombre d\'appels entrants',
-      dtce: 'Durée totale d\'appels entrants (sec)',
-      dmce: 'Durée moyenne d\'appels entrants (sec)',
-      nombreAppelsSortants: 'Nombre d\'appels sortants',
-      dtcs: 'Durée totale d\'appels sortants (sec)',
-      dmcs: 'Durée moyenne d\'appels sortants (sec)',
-      totalDays: 'Nombre de Jours'
+      nombreAppelsEntrants: "Nombre d'appels entrants",
+      dtce: "Durée totale d'appels entrants (sec)",
+      dmce: "Durée moyenne d'appels entrants (sec)",
+      nombreAppelsSortants: "Nombre d'appels sortants",
+      dtcs: "Durée totale d'appels sortants (sec)",
+      dmcs: "Durée moyenne d'appels sortants (sec)",
+      totalDays: 'Nombre de Jours',
     };
     return replacements[key] || key;
   };
@@ -123,26 +123,43 @@ function AgentStatsDialog({ open, onClose, agent }) {
           onChange={(e) => handleChange(setCompagneId)(e.target.value)}
           variant="outlined"
         >
-          {agent?.compagnes?.map((compagne) => (
-            <MenuItem key={compagne.id} value={compagne.id}>
-              {compagne.name}
-            </MenuItem>
-          ))}
+          {agent?.compagnes?.length > 0 ? (
+            agent.compagnes.map((compagne) => (
+              <MenuItem key={compagne.id} value={compagne.id}>
+                {compagne.name}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled>No compagnes available</MenuItem>
+          )}
         </TextField>
         {statistics && (
           <TableContainer component={Paper} style={{ marginTop: '20px' }}>
             <Table size="small" aria-label="Agent statistics">
               <TableBody>
-                {Object.entries(statistics).filter(([key, _]) => !key.endsWith('Id')).map(([key, value], index) => (
-                  <TableRow key={key} style={{ backgroundColor: index % 2 === 0 ? '#bdddfc' : '#fff1e7' }}>
-                    <TableCell component="th" scope="row" style={{ fontWeight: 'bold' }}>
-                      {getFormattedKey(key)}
-                    </TableCell>
-                    <TableCell style={{ textAlign: 'right', paddingRight: '24px' }}>
-                      {value}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {Object.entries(statistics)
+                  .filter(([key, _]) => !key.endsWith('Id'))
+                  .map(([key, value], index) => (
+                    <TableRow
+                      key={key}
+                      style={{
+                        backgroundColor: index % 2 === 0 ? '#bdddfc' : '#fff1e7',
+                      }}
+                    >
+                      <TableCell
+                        component="th"
+                        scope="row"
+                        style={{ fontWeight: 'bold' }}
+                      >
+                        {getFormattedKey(key)}
+                      </TableCell>
+                      <TableCell
+                        style={{ textAlign: 'right', paddingRight: '24px' }}
+                      >
+                        {value}
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>

@@ -1,7 +1,17 @@
 import React, { useState } from 'react';
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  IconButton, Tooltip, TableSortLabel, TablePagination, Button
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  IconButton,
+  Tooltip,
+  TableSortLabel,
+  TablePagination,
+  Button,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -54,6 +64,7 @@ function AgentTable({ agents, setAgents }) {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+    setSelectedAgent(null); // Clear selected agent on close
   };
 
   const handleSave = async (agent) => {
@@ -80,7 +91,7 @@ function AgentTable({ agents, setAgents }) {
 
   const handleCloseStatsDialog = () => {
     setOpenStatsDialog(false);
-    setSelectedAgentForStats(null);
+    setSelectedAgentForStats(null); // Clear selected agent for stats on close
   };
 
   const sortedAgents = [...agents]
@@ -134,13 +145,13 @@ function AgentTable({ agents, setAgents }) {
                   {agent.email}
                 </TableCell>
                 <TableCell>
-                  <PhoneIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5 , color:'#2e6f40'}} />
+                  <PhoneIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5 }} />
                   {agent.phone}
                 </TableCell>
                 <TableCell>
-                  {agent.compagnes && agent.compagnes.length > 0
+                  {agent.compagnes?.length
                     ? agent.compagnes.map((compagne) => compagne.name).join(', ')
-                    : ''}
+                    : 'No compagnes'}
                 </TableCell>
                 <TableCell>
                   <Button
@@ -154,14 +165,18 @@ function AgentTable({ agents, setAgents }) {
                 </TableCell>
                 <TableCell>
                   <Tooltip title="Edit">
-                    <IconButton onClick={() => handleOpenEditDialog(agent)}
-                      style={{color: '#453306' }}>
+                    <IconButton
+                      onClick={() => handleOpenEditDialog(agent)}
+                      style={{ color: '#453306' }}
+                    >
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
                   <Tooltip title="Delete">
-                    <IconButton onClick={() => handleDelete(agent.id)}
-                      style={{color: '#cd1c18' }}>
+                    <IconButton
+                      onClick={() => handleDelete(agent.id)}
+                      style={{ color: '#cd1c18' }}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </Tooltip>
