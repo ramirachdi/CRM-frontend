@@ -12,9 +12,9 @@ import {
   TableCell,
   TableRow,
   TableContainer,
-  Paper
+  Paper,
 } from '@mui/material';
-import { fetchStatisticsBetweenDates } from '../services/statisticsService';
+import { fetchStatisticsBetweenDates, fetchSummedStatisticsForAllCompagnes } from '../services/statisticsService';
 
 function AgentStatsDialog({ open, onClose, agent }) {
   const [dateDebut, setDateDebut] = useState('');
@@ -28,14 +28,14 @@ function AgentStatsDialog({ open, onClose, agent }) {
     setInitialFetchDone(false);
     setStatistics(null);
     if (agent?.compagnes?.length > 0) {
-      setCompagneId(agent.compagnes[0].id); // Default to the first compagne
+      setCompagneId('all'); // Default to "All" for compagnes
     } else {
       setCompagneId(''); // Clear if no compagnes
     }
   }, [agent]);
 
   const fetchStatistics = useCallback(async () => {
-    if (!dateDebut || !dateFin || !compagneId) {
+    if (!dateDebut || !dateFin) {
       setError('All fields must be filled out.');
       return;
     }
@@ -45,7 +45,16 @@ function AgentStatsDialog({ open, onClose, agent }) {
       try {
         const formattedDateDebut = `${dateDebut}T00:00:00.000Z`;
         const formattedDateFin = `${dateFin}T23:59:59.999Z`;
-        const data = await fetchStatisticsBetweenDates(agent.id, compagneId, formattedDateDebut, formattedDateFin);
+
+        let data;
+        if (compagneId === 'all') {
+          // Fetch summed statistics for all compagnes
+          data = await fetchSummedStatisticsForAllCompagnes(agent.id, formattedDateDebut, formattedDateFin);
+        } else {
+          // Fetch statistics for the selected compagne
+          data = await fetchStatisticsBetweenDates(agent.id, compagneId, formattedDateDebut, formattedDateFin);
+        }
+
         setStatistics(data);
       } catch (error) {
         console.error('Error fetching statistics:', error);
@@ -123,15 +132,12 @@ function AgentStatsDialog({ open, onClose, agent }) {
           onChange={(e) => handleChange(setCompagneId)(e.target.value)}
           variant="outlined"
         >
-          {agent?.compagnes?.length > 0 ? (
-            agent.compagnes.map((compagne) => (
-              <MenuItem key={compagne.id} value={compagne.id}>
-                {compagne.name}
-              </MenuItem>
-            ))
-          ) : (
-            <MenuItem disabled>No compagnes available</MenuItem>
-          )}
+          <MenuItem value="all">All Compagnes</MenuItem>
+          {agent?.compagnes?.map((compagne) => (
+            <MenuItem key={compagne.id} value={compagne.id}>
+              {compagne.name}
+            </MenuItem>
+          ))}
         </TextField>
         {statistics && (
           <TableContainer component={Paper} style={{ marginTop: '20px' }}>

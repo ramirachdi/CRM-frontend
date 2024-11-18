@@ -145,7 +145,7 @@ function AgentTable({ agents, setAgents }) {
                   {agent.email}
                 </TableCell>
                 <TableCell>
-                  <PhoneIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5 }} />
+                  <PhoneIcon fontSize="small" style={{ verticalAlign: 'middle', marginRight: 5, color:'#2e6f40' }} />
                   {agent.phone}
                 </TableCell>
                 <TableCell>
