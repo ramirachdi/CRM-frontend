@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
@@ -24,6 +24,30 @@ function Statistics() {
   const [compagneStatistics, setCompagneStatistics] = useState([]);
   const [agentStatistics, setAgentStatistics] = useState([]);
   const [error, setError] = useState('');
+
+  // Load state from localStorage on mount
+  useEffect(() => {
+    const savedDateDebut = localStorage.getItem('statisticsDateDebut');
+    const savedDateFin = localStorage.getItem('statisticsDateFin');
+    const savedSelection = localStorage.getItem('statisticsSelection');
+    const savedCompagneStatistics = localStorage.getItem('statisticsCompagneStatistics');
+    const savedAgentStatistics = localStorage.getItem('statisticsAgentStatistics');
+
+    if (savedDateDebut) setDateDebut(savedDateDebut);
+    if (savedDateFin) setDateFin(savedDateFin);
+    if (savedSelection) setSelection(savedSelection);
+    if (savedCompagneStatistics) setCompagneStatistics(JSON.parse(savedCompagneStatistics));
+    if (savedAgentStatistics) setAgentStatistics(JSON.parse(savedAgentStatistics));
+  }, []);
+
+  // Save state to localStorage on change
+  useEffect(() => {
+    localStorage.setItem('statisticsDateDebut', dateDebut);
+    localStorage.setItem('statisticsDateFin', dateFin);
+    localStorage.setItem('statisticsSelection', selection);
+    localStorage.setItem('statisticsCompagneStatistics', JSON.stringify(compagneStatistics));
+    localStorage.setItem('statisticsAgentStatistics', JSON.stringify(agentStatistics));
+  }, [dateDebut, dateFin, selection, compagneStatistics, agentStatistics]);
 
   const handleFetchStatistics = async () => {
     setError('');
