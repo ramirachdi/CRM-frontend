@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import Agents from './pages/Agents';
 import Compagnes from './pages/Compagnes';
 import Statistics from './pages/Statistics';
+import Presence from './pages/Presence';
 import './styles/App.css';
 
 function App() {
@@ -21,6 +22,8 @@ function App() {
               <Route path="/agents" element={<Agents />} />
               <Route path="/compagnes" element={<Compagnes />} />
               <Route path="/statistics" element={<Statistics />} />
+              <Route path="/presence" element={<Presence />} />
+
             </Routes>
           </main>
         </div>

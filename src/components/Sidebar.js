@@ -7,6 +7,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { Link as RouterLink } from 'react-router-dom';
 import '../styles/Sidebar.css';
 
@@ -18,6 +19,8 @@ function Sidebar() {
     { text: "Agents", icon: <PeopleIcon />, link: "/agents" },
     { text: "Compagnes", icon: <BusinessCenterIcon />, link: "/compagnes" },
     { text: "Statistics", icon: <BarChartIcon />, link: "/statistics" },
+    { text: "Presence", icon: <EventAvailableIcon />, link: "/presence" },
+
   ];
 
   const handleItemClick = (link) => {
