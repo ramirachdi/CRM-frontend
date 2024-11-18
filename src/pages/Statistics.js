@@ -45,7 +45,23 @@ function Statistics() {
     try {
       if (selection === 'compagne') {
         const response = await fetchCompagneStatisticsBetweenDates(null, dateDebut, dateFin);
-        setCompagneStatistics(response);
+        const totalOccupationWeight = response.reduce((sum, stat) => {
+          return sum + (stat.nombreAppelsEntrants * stat.dtce + stat.nombreAppelsSortants * stat.dtcs);
+        }, 0);
+
+        // Add taux d'occupation to each company and sort by it
+        const enrichedAndSorted = response
+          .map((stat) => {
+            const currentOccupationWeight =
+              stat.nombreAppelsEntrants * stat.dtce + stat.nombreAppelsSortants * stat.dtcs;
+            const tauxOccupation =
+              totalOccupationWeight > 0 ? (currentOccupationWeight / totalOccupationWeight) * 100 : 0;
+
+            return { ...stat, tauxOccupation };
+          })
+          .sort((a, b) => b.tauxOccupation - a.tauxOccupation);
+
+        setCompagneStatistics(enrichedAndSorted);
       } else if (selection === 'agent') {
         const response = await fetchSummedStatisticsForAllCompagnes(null, dateDebut, dateFin);
         setAgentStatistics(response);
