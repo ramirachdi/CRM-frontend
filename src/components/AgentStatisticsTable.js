@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Table,
   TableBody,
@@ -10,14 +10,42 @@ import {
   TableSortLabel,
   TablePagination,
   TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
+import { fetchStatisticsBetweenDates, fetchSummedStatisticsForAllCompagnes } from '../services/statisticsService';
 
-function AgentStatisticsTable({ agentStatistics }) {
+function AgentStatisticsTable({
+  agentStatistics,
+  setAgentStatistics,
+  dateDebut,
+  dateFin,
+  selectedCompagne,
+  setSelectedCompagne,
+}) {
   const [orderDirection, setOrderDirection] = useState('asc');
   const [orderBy, setOrderBy] = useState('agentName');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState('');
+  const [compagnes, setCompagnes] = useState([]);
+
+  useEffect(() => {
+    // Fetch the list of compagnes
+    async function fetchCompagneList() {
+      try {
+        const response = await fetch('http://localhost:3001/compagnes'); // Replace with your service
+        const data = await response.json();
+        setCompagnes([{ id: -1, name: 'All Compagnes' }, ...data]);
+      } catch (error) {
+        console.error('Error fetching compagnes:', error);
+      }
+    }
+  
+    fetchCompagneList();
+  }, []);
 
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && orderDirection === 'asc';
@@ -27,6 +55,25 @@ function AgentStatisticsTable({ agentStatistics }) {
 
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value.toLowerCase());
+  };
+
+  const handleCompagneChange = async (event) => {
+    const selected = event.target.value;
+    setSelectedCompagne(selected);
+  
+    try {
+      if (selected === -1) {
+        // Fetch all agents stats for all compagnes
+        const response = await fetchSummedStatisticsForAllCompagnes(null, dateDebut, dateFin);
+        setAgentStatistics(response);
+      } else {
+        // Fetch stats for the selected compagne
+        const response = await fetchStatisticsBetweenDates(null, selected, dateDebut, dateFin);
+        setAgentStatistics(response);
+      }
+    } catch (error) {
+      console.error('Error fetching agent statistics for selected compagne:', error);
+    }
   };
 
   const filteredStatistics = agentStatistics.filter(
@@ -64,6 +111,17 @@ function AgentStatisticsTable({ agentStatistics }) {
         onChange={handleSearchChange}
         placeholder="Search by agent or compagne name..."
       />
+      <FormControl fullWidth style={{ marginBottom: '16px' }}>
+        <InputLabel>Compagne</InputLabel>
+        <Select value={selectedCompagne ?? -1} onChange={handleCompagneChange}>
+          {compagnes.map((compagne) => (
+            <MenuItem key={compagne.id} value={compagne.id}>
+              {compagne.name}
+            </MenuItem>
+          ))}
+        </Select>
+
+      </FormControl>
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -78,13 +136,7 @@ function AgentStatisticsTable({ agentStatistics }) {
                 </TableSortLabel>
               </TableCell>
               <TableCell>
-                <TableSortLabel
-                  active={orderBy === 'compagneName'}
-                  direction={orderBy === 'compagneName' ? orderDirection : 'asc'}
-                  onClick={() => handleRequestSort('compagneName')}
-                >
-                  Compagne Name
-                </TableSortLabel>
+                Compagne Name
               </TableCell>
               <TableCell>Nombre Appels Entrants</TableCell>
               <TableCell>Durée Totale Entrants (DTCE)</TableCell>
@@ -98,7 +150,12 @@ function AgentStatisticsTable({ agentStatistics }) {
             {paginatedStatistics.map((stat, index) => (
               <TableRow key={index}>
                 <TableCell>{stat.agentName}</TableCell>
-                <TableCell>{stat.compagneName || 'All Compagnes'}</TableCell>
+                <TableCell>
+                  {selectedCompagne === -1
+                    ? 'All Compagnes'
+                    : compagnes.find((compagne) => compagne.id === selectedCompagne)?.name || 'Unknown Compagne'}
+                </TableCell>
+
                 <TableCell>{stat.nombreAppelsEntrants}</TableCell>
                 <TableCell>{stat.dtce}</TableCell>
                 <TableCell>{stat.dmce}</TableCell>

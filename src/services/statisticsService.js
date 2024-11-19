@@ -2,9 +2,12 @@ import axios from 'axios';
 
 // Fetch statistics for a specific agent and compagne within a date range
 export const fetchStatisticsBetweenDates = async (agentId, compagneId, dateDebut, dateFin) => {
-  const response = await axios.get(
-    `http://localhost:3001/statistics/betweenDates?agentId=${agentId}&compagneId=${compagneId}&dateDebut=${dateDebut}&dateFin=${dateFin}`
-  );
+  const url = agentId
+    ? `http://localhost:3001/statistics/betweenDates?agentId=${agentId}&compagneId=${compagneId}&dateDebut=${dateDebut}&dateFin=${dateFin}`
+    : `http://localhost:3001/statistics/betweenDates?compagneId=${compagneId}&dateDebut=${dateDebut}&dateFin=${dateFin}`;
+  
+  const response = await axios.get(url);
+  
   return response.data;
 };
 

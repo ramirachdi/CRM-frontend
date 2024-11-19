@@ -3,7 +3,7 @@ import { Typography } from '@mui/material';
 import StatisticsFilters from '../components/StatisticsFilters';
 import CompagneStatisticsTable from '../components/CompagneStatisticsTable';
 import AgentStatisticsTable from '../components/AgentStatisticsTable';
-import { fetchCompagneStatisticsBetweenDates, fetchSummedStatisticsForAllCompagnes } from '../services/statisticsService';
+import { fetchCompagneStatisticsBetweenDates, fetchSummedStatisticsForAllCompagnes ,fetchStatisticsBetweenDates} from '../services/statisticsService';
 
 function Statistics() {
   const [dateDebut, setDateDebut] = useState('');
@@ -11,6 +11,7 @@ function Statistics() {
   const [selection, setSelection] = useState('');
   const [compagneStatistics, setCompagneStatistics] = useState([]);
   const [agentStatistics, setAgentStatistics] = useState([]);
+  const [selectedCompagne, setSelectedCompagne] = useState(-1); // Added state for selectedCompagne
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -63,8 +64,18 @@ function Statistics() {
 
         setCompagneStatistics(enrichedAndSorted);
       } else if (selection === 'agent') {
-        const response = await fetchSummedStatisticsForAllCompagnes(null, dateDebut, dateFin);
-        setAgentStatistics(response);
+        if (selectedCompagne === -1) {
+          const response = await fetchSummedStatisticsForAllCompagnes(null, dateDebut, dateFin);
+          setAgentStatistics(response);
+        } else {
+          const response = await fetchStatisticsBetweenDates(
+            null,
+            selectedCompagne,
+            dateDebut,
+            dateFin
+          );
+          setAgentStatistics(response);
+        }
       }
     } catch (err) {
       console.error('Error fetching statistics:', err);
@@ -91,7 +102,14 @@ function Statistics() {
         <CompagneStatisticsTable compagneStatistics={compagneStatistics} />
       )}
       {selection === 'agent' && agentStatistics.length > 0 && (
-        <AgentStatisticsTable agentStatistics={agentStatistics} />
+        <AgentStatisticsTable
+          agentStatistics={agentStatistics}
+          setAgentStatistics={setAgentStatistics} // Pass setter
+          dateDebut={dateDebut}
+          dateFin={dateFin}
+          selectedCompagne={selectedCompagne} // Pass selected compagne
+          setSelectedCompagne={setSelectedCompagne} // Pass setter for compagne
+        />
       )}
     </div>
   );
