@@ -43,7 +43,7 @@ function AgentStatisticsTable({
         console.error('Error fetching compagnes:', error);
       }
     }
-  
+
     fetchCompagneList();
   }, []);
 
@@ -60,7 +60,7 @@ function AgentStatisticsTable({
   const handleCompagneChange = async (event) => {
     const selected = event.target.value;
     setSelectedCompagne(selected);
-  
+
     try {
       if (selected === -1) {
         // Fetch all agents stats for all compagnes
@@ -82,7 +82,12 @@ function AgentStatisticsTable({
       (stat.compagneName || 'All Compagnes').toLowerCase().includes(searchQuery)
   );
 
-  const sortedStatistics = [...filteredStatistics].sort((a, b) => {
+  const enrichedStatistics = filteredStatistics.map((stat) => ({
+    ...stat,
+    appelsTotal: stat.dtce + stat.dtcs,
+  }));
+
+  const sortedStatistics = [...enrichedStatistics].sort((a, b) => {
     if (orderBy === 'agentName' || orderBy === 'compagneName') {
       const valueA = (a[orderBy] || '').toLowerCase();
       const valueB = (b[orderBy] || '').toLowerCase();
@@ -120,7 +125,6 @@ function AgentStatisticsTable({
             </MenuItem>
           ))}
         </Select>
-
       </FormControl>
       <TableContainer component={Paper}>
         <Table>
@@ -144,6 +148,15 @@ function AgentStatisticsTable({
               <TableCell>Nombre Appels Sortants</TableCell>
               <TableCell>Durée Totale Sortants (DTCS)</TableCell>
               <TableCell>Durée Moyenne Sortants (DMCS)</TableCell>
+              <TableCell style={{backgroundColor: "#cd1c18"}}>
+                <TableSortLabel
+                  active={orderBy === 'appelsTotal'}
+                  direction={orderBy === 'appelsTotal' ? orderDirection : 'asc'}
+                  onClick={() => handleRequestSort('appelsTotal')}
+                >
+                  Durée Totale d'Appels
+                </TableSortLabel>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -155,13 +168,14 @@ function AgentStatisticsTable({
                     ? 'All Compagnes'
                     : compagnes.find((compagne) => compagne.id === selectedCompagne)?.name || 'Unknown Compagne'}
                 </TableCell>
-
                 <TableCell>{stat.nombreAppelsEntrants}</TableCell>
                 <TableCell>{stat.dtce}</TableCell>
                 <TableCell>{stat.dmce}</TableCell>
                 <TableCell>{stat.nombreAppelsSortants}</TableCell>
                 <TableCell>{stat.dtcs}</TableCell>
                 <TableCell>{stat.dmcs}</TableCell>
+                <TableCell style={{ backgroundColor: '#ffa896' }}>
+                  {stat.appelsTotal}</TableCell>
               </TableRow>
             ))}
           </TableBody>
