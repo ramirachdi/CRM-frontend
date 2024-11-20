@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Typography } from '@mui/material';
 import StatisticsFilters from '../components/StatisticsFilters';
 import CompagneStatisticsTable from '../components/CompagneStatisticsTable';
 import AgentStatisticsTable from '../components/AgentStatisticsTable';
-import { fetchCompagneStatisticsBetweenDates, fetchSummedStatisticsForAllCompagnes ,fetchStatisticsBetweenDates} from '../services/statisticsService';
+import {
+  fetchCompagneStatisticsBetweenDates,
+  fetchSummedStatisticsForAllCompagnes,
+  fetchStatisticsBetweenDates,
+} from '../services/statisticsService';
 
 function Statistics() {
   const [dateDebut, setDateDebut] = useState('');
@@ -11,30 +15,8 @@ function Statistics() {
   const [selection, setSelection] = useState('');
   const [compagneStatistics, setCompagneStatistics] = useState([]);
   const [agentStatistics, setAgentStatistics] = useState([]);
-  const [selectedCompagne, setSelectedCompagne] = useState(-1); // Added state for selectedCompagne
+  const [selectedCompagne, setSelectedCompagne] = useState(-1);
   const [error, setError] = useState('');
-
-  useEffect(() => {
-    const savedDateDebut = localStorage.getItem('statisticsDateDebut');
-    const savedDateFin = localStorage.getItem('statisticsDateFin');
-    const savedSelection = localStorage.getItem('statisticsSelection');
-    const savedCompagneStatistics = localStorage.getItem('statisticsCompagneStatistics');
-    const savedAgentStatistics = localStorage.getItem('statisticsAgentStatistics');
-
-    if (savedDateDebut) setDateDebut(savedDateDebut);
-    if (savedDateFin) setDateFin(savedDateFin);
-    if (savedSelection) setSelection(savedSelection);
-    if (savedCompagneStatistics) setCompagneStatistics(JSON.parse(savedCompagneStatistics));
-    if (savedAgentStatistics) setAgentStatistics(JSON.parse(savedAgentStatistics));
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('statisticsDateDebut', dateDebut);
-    localStorage.setItem('statisticsDateFin', dateFin);
-    localStorage.setItem('statisticsSelection', selection);
-    localStorage.setItem('statisticsCompagneStatistics', JSON.stringify(compagneStatistics));
-    localStorage.setItem('statisticsAgentStatistics', JSON.stringify(agentStatistics));
-  }, [dateDebut, dateFin, selection, compagneStatistics, agentStatistics]);
 
   const handleFetchStatistics = async () => {
     setError('');
@@ -104,11 +86,11 @@ function Statistics() {
       {selection === 'agent' && agentStatistics.length > 0 && (
         <AgentStatisticsTable
           agentStatistics={agentStatistics}
-          setAgentStatistics={setAgentStatistics} // Pass setter
+          setAgentStatistics={setAgentStatistics}
           dateDebut={dateDebut}
           dateFin={dateFin}
-          selectedCompagne={selectedCompagne} // Pass selected compagne
-          setSelectedCompagne={setSelectedCompagne} // Pass setter for compagne
+          selectedCompagne={selectedCompagne}
+          setSelectedCompagne={setSelectedCompagne}
         />
       )}
     </div>
