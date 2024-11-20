@@ -79,7 +79,7 @@ function CompagneStatisticsTable({ compagneStatistics }) {
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: '#e0cd95' }}>
+            <TableRow style={{ backgroundColor: '#E7E8D1' }}>
               <TableCell>
                 <TableSortLabel
                   active={orderBy === 'compagneName'}
@@ -95,7 +95,7 @@ function CompagneStatisticsTable({ compagneStatistics }) {
               <TableCell>Nombre Appels Sortants</TableCell>
               <TableCell>Durée Totale Sortants (DTCS)</TableCell>
               <TableCell>Durée Moyenne Sortants (DMCS)</TableCell>
-              <TableCell style={{backgroundColor: "#cd1c18"}}>
+              <TableCell style={{backgroundColor: "#A7BEAE"}}>
                 <TableSortLabel
                   active={orderBy === 'tauxOccupation'}
                   direction={orderBy === 'tauxOccupation' ? orderDirection : 'asc'}
@@ -116,7 +116,7 @@ function CompagneStatisticsTable({ compagneStatistics }) {
                 <TableCell>{stat.nombreAppelsSortants}</TableCell>
                 <TableCell>{stat.dtcs}</TableCell>
                 <TableCell>{stat.dmcs}</TableCell>
-                <TableCell style={{ backgroundColor: '#ffa896' }}>
+                <TableCell style={{ backgroundColor: '#DDE1E3' }}>
                   {stat.tauxOccupation.toFixed(2)}%
                 </TableCell>
               </TableRow>

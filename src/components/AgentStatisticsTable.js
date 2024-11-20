@@ -25,8 +25,8 @@ function AgentStatisticsTable({
   selectedCompagne,
   setSelectedCompagne,
 }) {
-  const [orderDirection, setOrderDirection] = useState('asc');
-  const [orderBy, setOrderBy] = useState('agentName');
+  const [orderDirection, setOrderDirection] = useState('desc');
+  const [orderBy, setOrderBy] = useState('appelsTotal'); // Default sorting by appelsTotal
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState('');
@@ -47,6 +47,24 @@ function AgentStatisticsTable({
     fetchCompagneList();
   }, []);
 
+  useEffect(() => {
+    // Fetch data based on the selected compagne
+    async function fetchData() {
+      try {
+        if (selectedCompagne === -1) {
+          const response = await fetchSummedStatisticsForAllCompagnes(null, dateDebut, dateFin);
+          setAgentStatistics(response);
+        } else {
+          const response = await fetchStatisticsBetweenDates(null, selectedCompagne, dateDebut, dateFin);
+          setAgentStatistics(response);
+        }
+      } catch (error) {
+        console.error('Error fetching agent statistics:', error);
+      }
+    }
+    fetchData();
+  }, [selectedCompagne, dateDebut, dateFin, setAgentStatistics]);
+
   const handleRequestSort = (property) => {
     const isAsc = orderBy === property && orderDirection === 'asc';
     setOrderDirection(isAsc ? 'desc' : 'asc');
@@ -57,23 +75,8 @@ function AgentStatisticsTable({
     setSearchQuery(event.target.value.toLowerCase());
   };
 
-  const handleCompagneChange = async (event) => {
-    const selected = event.target.value;
-    setSelectedCompagne(selected);
-
-    try {
-      if (selected === -1) {
-        // Fetch all agents stats for all compagnes
-        const response = await fetchSummedStatisticsForAllCompagnes(null, dateDebut, dateFin);
-        setAgentStatistics(response);
-      } else {
-        // Fetch stats for the selected compagne
-        const response = await fetchStatisticsBetweenDates(null, selected, dateDebut, dateFin);
-        setAgentStatistics(response);
-      }
-    } catch (error) {
-      console.error('Error fetching agent statistics for selected compagne:', error);
-    }
+  const handleCompagneChange = (event) => {
+    setSelectedCompagne(event.target.value);
   };
 
   const filteredStatistics = agentStatistics.filter(
@@ -129,7 +132,7 @@ function AgentStatisticsTable({
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
-            <TableRow style={{ backgroundColor: '#e0cd95' }}>
+            <TableRow style={{ backgroundColor: '#E7E8D1' }}>
               <TableCell>
                 <TableSortLabel
                   active={orderBy === 'agentName'}
@@ -139,22 +142,20 @@ function AgentStatisticsTable({
                   Agent Name
                 </TableSortLabel>
               </TableCell>
-              <TableCell>
-                Compagne Name
-              </TableCell>
+              <TableCell>Compagne Name</TableCell>
               <TableCell>Nombre Appels Entrants</TableCell>
               <TableCell>Durée Totale Entrants (DTCE)</TableCell>
               <TableCell>Durée Moyenne Entrants (DMCE)</TableCell>
               <TableCell>Nombre Appels Sortants</TableCell>
               <TableCell>Durée Totale Sortants (DTCS)</TableCell>
               <TableCell>Durée Moyenne Sortants (DMCS)</TableCell>
-              <TableCell style={{backgroundColor: "#cd1c18"}}>
+              <TableCell style={{ backgroundColor: '#A7BEAE' }}>
                 <TableSortLabel
                   active={orderBy === 'appelsTotal'}
                   direction={orderBy === 'appelsTotal' ? orderDirection : 'asc'}
                   onClick={() => handleRequestSort('appelsTotal')}
                 >
-                  Durée Totale d'Appels
+                  Durée Totale d&apos;Appels
                 </TableSortLabel>
               </TableCell>
             </TableRow>
@@ -174,7 +175,7 @@ function AgentStatisticsTable({
                 <TableCell>{stat.nombreAppelsSortants}</TableCell>
                 <TableCell>{stat.dtcs}</TableCell>
                 <TableCell>{stat.dmcs}</TableCell>
-                <TableCell style={{ backgroundColor: '#ffa896' }}>
+                <TableCell style={{ backgroundColor: '#EDF4F2' }}>
                   {stat.appelsTotal}</TableCell>
               </TableRow>
             ))}

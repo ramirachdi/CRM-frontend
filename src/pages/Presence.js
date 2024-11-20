@@ -1,21 +1,28 @@
 import React, { useState } from 'react';
-import { Typography } from '@mui/material';
+import { Typography, Button } from '@mui/material';
 import DateSelector from '../components/DateSelector';
 import PresenceTable from '../components/PresenceTable';
 import { fetchPresencesByDate } from '../services/presenceService';
 
-const PresencePage = () => {
+const Presence = () => {
   const [selectedDate, setSelectedDate] = useState('');
   const [presences, setPresences] = useState([]);
+  const [error, setError] = useState('');
 
   const availableDates = ['2024-11-01', '2024-11-02']; // Replace with dynamic dates if needed
 
-  const handleDateChange = async (date) => {
-    setSelectedDate(date);
+  const handleFetchPresences = async () => {
+    if (!selectedDate) {
+      setError('Please select a date before fetching presences.');
+      return;
+    }
+
+    setError('');
     try {
-      const data = await fetchPresencesByDate(date);
+      const data = await fetchPresencesByDate(selectedDate);
       setPresences(data);
     } catch (error) {
+      setError('Failed to fetch presences. Please try again later.');
       console.error('Error fetching presences:', error);
     }
   };
@@ -27,12 +34,24 @@ const PresencePage = () => {
       </Typography>
       <DateSelector
         selectedDate={selectedDate}
-        setSelectedDate={handleDateChange}
+        setSelectedDate={setSelectedDate}
         availableDates={availableDates}
       />
+      <Button
+        variant="contained"
+        onClick={handleFetchPresences}
+        style={{ marginBottom: '20px' , backgroundColor: "#31473A"}}
+      >
+        Fetch Presences
+      </Button>
+      {error && (
+        <Typography color="error" style={{ marginBottom: '20px' }}>
+          {error}
+        </Typography>
+      )}
       <PresenceTable presences={presences} />
     </div>
   );
 };
 
-export default PresencePage;
+export default Presence;

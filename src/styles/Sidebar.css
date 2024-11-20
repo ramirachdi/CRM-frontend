@@ -18,12 +18,12 @@
 }
 
 .sidebarListItem:hover {
-  background-color: #db9a39; /* Background color on hover */
+  background-color: #E88659; /* Background color on hover */
   cursor: pointer;
 }
 
 .sidebarListItem.active {
-  background-color: #db9a39; /* Active background color */
+  background-color: #E88659; /* Active background color */
   color: #fff; /* Active text color */
 }
 
