@@ -1,23 +1,23 @@
 import React from 'react';
-import { TextField } from '@mui/material';
+import { FormControl, TextField } from '@mui/material';
 
 const DateSelector = ({ selectedDate, setSelectedDate }) => {
   const handleChange = (event) => {
-    setSelectedDate(event.target.value);
+    setSelectedDate(event.target.value); // This returns a string in YYYY-MM-DD format
   };
 
   return (
-    <TextField
-      label="Select Date"
-      type="date"
-      value={selectedDate}
-      onChange={handleChange}
-      fullWidth
-      InputLabelProps={{
-        shrink: true,
-      }}
-      style={{ marginBottom: '20px' }}
-    />
+    <FormControl fullWidth style={{ marginBottom: '20px' }}>
+      <TextField
+        label="Select Date"
+        type="date"
+        value={selectedDate || ''}
+        onChange={handleChange}
+        InputLabelProps={{
+          shrink: true,
+        }}
+      />
+    </FormControl>
   );
 };
 
