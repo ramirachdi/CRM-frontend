@@ -19,12 +19,19 @@ const PresenceTable = ({ presences }) => {
   const handleViewDetails = async (presenceId) => {
     try {
       const fetchedDetails = await fetchPresenceDetails(presenceId);
-      setDetails(fetchedDetails);
+      if (fetchedDetails) {
+        setDetails(fetchedDetails);
+      } else {
+        setDetails([]); // Handle case where no details are found
+      }
       setOpen(true); // Open the dialog
     } catch (error) {
       console.error(`Error fetching details for presence ID ${presenceId}:`, error);
+      setDetails([]); // Ensure the dialog opens even in case of error
+      setOpen(true);
     }
   };
+  
 
   const handleClose = () => {
     setOpen(false);
