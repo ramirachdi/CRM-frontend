@@ -6,6 +6,16 @@ export const fetchPresencesByDate = async (date) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching presences:', error);
-    throw error; // Ensure errors are handled in the frontend
+    throw error;
+  }
+};
+
+export const fetchPresenceDetails = async (presenceId) => {
+  try {
+    const response = await axios.get(`http://localhost:3001/presences/${presenceId}/details`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching presence details:', error);
+    throw error;
   }
 };

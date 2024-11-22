@@ -9,8 +9,6 @@ const Presence = () => {
   const [presences, setPresences] = useState([]);
   const [error, setError] = useState('');
 
-  const availableDates = ['2024-11-01', '2024-11-02']; // Replace with dynamic dates if needed
-
   const handleFetchPresences = async () => {
     if (!selectedDate) {
       setError('Please select a date before fetching presences.');
@@ -32,15 +30,11 @@ const Presence = () => {
       <Typography variant="h5" gutterBottom>
         Presence Management
       </Typography>
-      <DateSelector
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        availableDates={availableDates}
-      />
+      <DateSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
       <Button
         variant="contained"
         onClick={handleFetchPresences}
-        style={{ marginBottom: '20px' , backgroundColor: "#31473A"}}
+        style={{ marginBottom: '20px', backgroundColor: '#31473A' }}
       >
         Fetch Presences
       </Button>
